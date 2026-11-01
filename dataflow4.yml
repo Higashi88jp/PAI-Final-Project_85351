@@ -1,0 +1,35 @@
+%%writefile dataflow4.yml
+nodes:
+
+  - id: sensor
+    path: sensor.py
+    inputs:
+      tick: dora/timer/millis/100
+    outputs: [reading]
+
+  - id: filter
+    path: filter.py
+    env:
+      WINDOW: "5"
+    inputs:
+      reading: sensor/reading
+    outputs: [smoothed]
+
+  - id: alarm
+    path: alarm.py
+    inputs:
+      smoothed: filter/smoothed
+    outputs: [alarm]
+
+  - id: monitor
+    path: monitor.py
+    inputs:
+      raw: sensor/reading
+      smoothed: filter/smoothed
+      alarm: alarm/alarm
+
+  - id: recorder
+    path: recorder.py
+    inputs:
+      raw: sensor/reading
+      smoothed: filter/smoothed
